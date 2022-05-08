@@ -1,4 +1,3 @@
-
 // from https://lit.dev/docs/composition/controllers/
 
 import {initialState, Task} from '@lit-labs/task';
@@ -16,6 +15,7 @@ export class NamesController {
     this.task = new Task(
       host,
       async ([kind]) => {
+        console.log(`fetching ${kind}`);
         if (!kind?.trim()) {
           return initialState;
         }

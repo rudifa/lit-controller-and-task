@@ -1,13 +1,14 @@
 /** @prettier */
 
 import {html, css, LitElement} from 'lit';
-
+import {customElement, property, state} from 'lit/decorators.js';
 /**
  * An example element.
  *
  * @slot - This element has a slot
  * @csspart button - The button
  */
+@customElement('my-element')
 export class MyElement extends LitElement {
   static get styles() {
     return css`
@@ -20,25 +21,11 @@ export class MyElement extends LitElement {
     `;
   }
 
-  static get properties() {
-    return {
-      /**
-       * The name to say "Hello" to.
-       */
-      name: {type: String},
+  @property()
+  name = 'World';
 
-      /**
-       * The number of times the button has been clicked.
-       */
-      count: {type: Number},
-    };
-  }
-
-  constructor() {
-    super();
-    this.name = 'World';
-    this.count = 0;
-  }
+  @state()
+  count = 0;
 
   render() {
     return html`
@@ -54,10 +41,3 @@ export class MyElement extends LitElement {
     this.count++;
   }
 }
-console.log(``);
-
-window.customElements.define('my-element', MyElement);
-console.log(``);
-console.log(``);
-
-console.log(`ok`);
