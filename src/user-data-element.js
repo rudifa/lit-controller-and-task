@@ -24,20 +24,18 @@ export class UserDataElement extends LitElement {
 
   // https://api.github.com/users/rudifa
 
-  delay = 'https://deelay.me/2000/';
+  @state()
+  prefix = '';
+
+  delayPrefix = 'https://deelay.me/1000/';
 
   _apiTask = new Task(
     this,
 
-    // ([userId]) =>
-    //   fetch(
-    //     `https://deelay.me/1000/https://api.github.com/users/${userId}`
-    //   ).then((response) => response.json()),
-
-    async ([userId]) => {
+    async ([userId, prefix]) => {
       const response = await fetch(
         //`https://deelay.me/500/https://api.github.com/users/${userId}`
-        `https://api.github.com/users/${userId}`
+        `${prefix}https://api.github.com/users/${userId}`
       );
       console.log(`response: ${response}`); // can't be examined in the browser console
       console.log('response.ok', response.ok);
@@ -57,7 +55,7 @@ export class UserDataElement extends LitElement {
       }
       return user;
     },
-    () => [this.userId]
+    () => [this.userId, this.prefix]
   );
 
   render() {
@@ -73,24 +71,43 @@ export class UserDataElement extends LitElement {
           }}
         />
       </div>
-      ${this._apiTask.render({
-        pending: () => html`Loading ...`,
-        complete: (user) => {
-          console.log(`user: ${user}`);
-          return html`${user.name}<br />
-            ${user.login}
-            <br />
-            ${user.bio}
-            <br />
-            ${user.location}
-            <br />
-            ${user.blog} `;
-        },
-        error: (e) => html`<p>${e}</p>`,
-      })}
+      <div>
+        ${this._apiTask.render({
+          pending: () => html`Loading ...`,
+          complete: (user) => {
+            console.log(`user:`, user);
+            return html`${user.name}<br />
+              ${user.login}
+              <br />
+              ${user.bio}
+              <br />
+              ${user.location}
+              <br />
+              ${user.blog} `;
+          },
+          error: (e) => html`<p>${e}</p>`,
+        })}
+      </div>
+      <div>
+        <p>
+          <input
+            type="checkbox"
+            id="slow-conn"
+            name="slow-conn"
+            @change=${(e) => {
+              this.prefix = e.target.checked ? this.delayPrefix : '';
+            }}
+          />
+          <label for="slow-conn"> Simulate slow connection</label>
+        </p>
+      </div>
     `;
   }
 }
 
+{
+  /* <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+<label for="vehicle1"> I have a bike</label><br> */
+}
 // complete: (user) => html`${user.name}`,
 // complete: (user) =>{return  html`${user.name}`},

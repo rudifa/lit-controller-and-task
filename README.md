@@ -11,7 +11,7 @@ Next Generation Frontend Tooling](https://vitejs.dev/)
 
 [Vite.js Tutorial – How to Install and Use Vite in Your Web Projects](https://www.freecodecamp.org/news/get-started-with-vite/)
 
-## Using decorators in vite project
+## Using decorators in a vite project
 
 1. add dependencies
    npm i @babel/plugin-proposal-decorators --save-dev
@@ -65,6 +65,20 @@ Watch out for the trap:
     console.log(`response: ${response}`); // response: [object Object] - almost useless
     console.log('response', response); // can be examined in the browser console
 ```
+
+# Objectives of the `lit-controller-and-task` project
+
+Learn how to use lit-labs/Task to encapsulate fetching of resources from the web
+
+References:
+
+[Lit](https://lit.dev/)
+
+[Lit Playground](https://lit.dev/playground/)
+
+[Lit Reactive Controllers](https://lit.dev/docs/composition/controllers/)
+
+[@lit-labs/task](https://github.com/lit/lit/blob/main/packages/labs/task/README.md#lit-labstask)
 
 ## Open for further study
 
