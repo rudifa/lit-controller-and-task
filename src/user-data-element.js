@@ -4,6 +4,17 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {Task, TaskStatus} from '@lit-labs/task';
 
+class AbortableTask extends Task {
+  // a new instance must be added by fetch()
+  _abortController = undefined;
+
+  abort() {
+    if (this._abortController) {
+      this._abortController.abort();
+    }
+  }
+}
+
 @customElement('user-data-element')
 export class UserDataElement extends LitElement {
   static get styles() {
@@ -16,27 +27,40 @@ export class UserDataElement extends LitElement {
         font-size: 16px;
         font-family: 'Helvetica Neue', sans-serif;
       }
+      input {
+        font-size: 14px;
+        font-family: 'Helvetica Neue', sans-serif;
+      }
     `;
   }
+
   @state()
   userId = 'rudifa';
-  //   private _userId: number;
-
-  // https://api.github.com/users/rudifa
 
   @state()
+  _simulateSlowConnection = false;
+
+  fullUrl() {
+    return `${
+      this._simulateSlowConnection ? 'https://deelay.me/3000/' : ''
+    }https://api.github.com/users/${this.userId}`;
+  }
+
   prefix = '';
 
-  delayPrefix = 'https://deelay.me/1000/';
+  delayPrefix = 'https://deelay.me/3000/';
 
-  _apiTask = new Task(
+  _apiTask = new AbortableTask(
     this,
 
     async ([userId, prefix]) => {
-      const response = await fetch(
-        //`https://deelay.me/500/https://api.github.com/users/${userId}`
-        `${prefix}https://api.github.com/users/${userId}`
-      );
+      this._apiTask._abortController = new AbortController();
+      console.log('task:', typeof this, this); // task: object <user-data-element>​…​</user-data-element>​#shadow-root (open)<!----><div>​" github user: "<input type=​"text">​</div>​<div>​…​</div>​<div>​…​</div>​<div>​…​</div>​</user-data-element>​
+      console.log('_abortController:', this._apiTask._abortController); // task: object <user-data-element>​…​</user-data-element>​#shadow-root (open)<!----><div>​" github user: "<input type=​"text">​</div>​<div>​…​</div>​<div>​…​</div>​<div>​…​</div>​</user-data-element>​
+      const signal = this._apiTask._abortController.signal;
+      //this.host._abortController = controller; // NO GOOD
+      // this._abortController = controller;
+      const response = await fetch(this.fullUrl(), {signal});
       console.log(`response: ${response}`); // can't be examined in the browser console
       console.log('response.ok', response.ok);
       console.log('response.status', response.status);
@@ -58,6 +82,12 @@ export class UserDataElement extends LitElement {
     () => [this.userId, this.prefix]
   );
 
+  // _abortController = null; // new AbortController();
+
+  firstUpdated() {
+    console.log('firstUpdated', this, this.delayPrefix);
+  }
+
   render() {
     return html`
       <div>
@@ -66,40 +96,51 @@ export class UserDataElement extends LitElement {
           type="text"
           @change=${(e) => {
             this.userId = e.target.value;
-            console.log('userId', this.userId, this._apiTask.autoRun);
+            // console.log('userId', this.userId, this._apiTask.autoRun);
             //this._apiTask.run();
           }}
         />
       </div>
       <div>
-        ${this._apiTask.render({
-          pending: () => html`Loading ...`,
-          complete: (user) => {
-            console.log(`user:`, user);
-            return html`${user.name}<br />
-              ${user.login}
-              <br />
-              ${user.bio}
-              <br />
-              ${user.location}
-              <br />
-              ${user.blog} `;
-          },
-          error: (e) => html`<p>${e}</p>`,
-        })}
+        <p>
+          ${this._apiTask.render({
+            pending: () => html`Loading ...`,
+            complete: (user) => {
+              console.log(`user:`, user);
+              return html`${user.name}<br />
+                ${user.login}
+                <br />
+                ${user.bio}
+                <br />
+                ${user.location}
+                <br />
+                ${user.blog} `;
+            },
+            error: (e) => html`<p>${e}</p>`,
+          })}
+        </p>
       </div>
       <div>
         <p>
           <input
             type="checkbox"
             id="slow-conn"
-            name="slow-conn"
             @change=${(e) => {
-              this.prefix = e.target.checked ? this.delayPrefix : '';
+              this._simulateSlowConnection = e.target.checked;
             }}
           />
           <label for="slow-conn"> Simulate slow connection</label>
         </p>
+      </div>
+      <div>
+        <input
+          type="button"
+          ?hidden=${!this._simulateSlowConnection}
+          value="Abort"
+          @click=${() => {
+            this._apiTask.abort();
+          }}
+        />
       </div>
     `;
   }
