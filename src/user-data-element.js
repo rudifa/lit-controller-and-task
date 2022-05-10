@@ -30,6 +30,9 @@ export class UserDataElement extends LitElement {
         font-size: 14px;
         font-family: 'Helvetica Neue', sans-serif;
       }
+      img {
+        border-radius: 30%;
+      }
     `;
   }
 
@@ -59,13 +62,14 @@ export class UserDataElement extends LitElement {
           return response.json();
         })
         .then((user) => {
+          console.log(`got user:`, user);
           return user;
         })
         .catch((error) => {
           console.log(`caught error: ${error}`);
           return error;
         });
-      console.log(`got user:`, user);
+      console.log(`final got user:`, user);
       return user;
     },
 
@@ -99,7 +103,8 @@ export class UserDataElement extends LitElement {
                 <br />
                 ${user.location}
                 <br />
-                ${user.blog} `;
+                ${user.blog}
+                <img width="40" height="40" src="${user.avatar_url}" /> `;
             },
             error: (e) => html`<p>${e}</p>`,
           })}
