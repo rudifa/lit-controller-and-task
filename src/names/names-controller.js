@@ -15,7 +15,7 @@ export class NamesController {
     this.task = new Task(
       host,
       async ([kind]) => {
-        console.log(`fetching ${kind}`);
+        //console.log(`fetching ${kind}`);
         if (!kind?.trim()) {
           return initialState;
         }
