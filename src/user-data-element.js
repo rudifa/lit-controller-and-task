@@ -45,10 +45,6 @@ export class UserDataElement extends LitElement {
     }https://api.github.com/users/${this.userId}`;
   }
 
-  prefix = '';
-
-  delayPrefix = 'https://deelay.me/3000/';
-
   _apiTask = new AbortableTask(
     this,
 
@@ -66,8 +62,10 @@ export class UserDataElement extends LitElement {
           return user;
         })
         .catch((error) => {
-          throw error;
+          console.log(`caught error: ${error}`);
+          return error;
         });
+      console.log(`got user:`, user);
       return user;
     },
 
