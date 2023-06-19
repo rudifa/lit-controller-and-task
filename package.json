@@ -17,7 +17,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-decorators": "^7.17.9",
-    "vite": "^2.9.5",
+    "vite": "^2.9.16",
     "vite-plugin-babel": "^1.0.0"
   }
 }
